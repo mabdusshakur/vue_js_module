@@ -1,37 +1,66 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
-const containerClass = 'app-container';
-const p1 = 'pClassColor';
-const p2 = 'pClassSize';
+const count = ref(0);
 
-const h1Color = ref('#ff5733');
-const h1FontSize = ref('24');
+function increment() {
+  count.value++;
+}
 
-const containerStyle = computed(() => ({
-  maxWidth: '1100px',
-  margin: '0 auto',
-  padding: '2rem',
-  fontFamily: "'Segoe UI', sans-serif",
-  color: h1Color.value,
-}));
+const decrement = () => {
+  count.value--;
+};
+
+const addAmount = (amount) => {
+  count.value += amount;
+}
+
+const acceptEvent = (arg, event) => {
+  console.log('Argument accepted:', arg);
+  console.log('Event accepted:', event);
+}
+
+const handleMouseEnter = (event) => {
+  console.log("Mouse entered");
+}
+
+const handleMouseLeave = (event) => {
+  console.log("Mouse left");
+}
+
+const isActive = ref(true);
 </script>
 
 <template>
-  <div :style="containerStyle">
-    <h1 :style="{ color: h1Color, fontSize: h1FontSize + 'px' }">Class & Style Binding</h1>
-    <!-- <p :class="[p1, p2]">Hello, how are you today?</p> -->
-    <input type="color" v-model="h1Color" />
-    <input type="number" v-model="h1FontSize" /> px
+  <div class="app-container">
+    <button v-on:click="increment">+</button>
+    <h1 v-if="isActive">Counter: {{ count }}</h1>
+    <button @click="decrement">-</button>
+
+    <button @click="count = 0">Reset</button>
+    <button @click="count = 100">Count to 100</button>
+    <button @click="isActive = !isActive">
+      {{ isActive ? 'Deactivate' : 'Activate' }}
+    </button>
+    <button @click="addAmount(10)">Add 10</button>
+    <button @click="addAmount(100)">Add 100</button>
+    <button @click="addAmount(1000)">Add 1000</button>
+
+    <!-- Event passing -->
+    <button @click="acceptEvent('Button clicked', $event)">Accept Event</button>
+
+    <div v-on:mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
+      style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+      Hover over me
+    </div>-
   </div>
 </template>
 
 <style scoped>
-
-.pClassColor {
-  color: blue;
-}
-.pClassSize {
-  font-size: 40px;
+.app-container {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 </style>
