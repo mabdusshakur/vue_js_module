@@ -1,204 +1,71 @@
 <script setup>
-import { ref } from 'vue';
+import { reactive, toRefs, toRef } from 'vue'
 
-const count = ref(0);
+// ❌ PROBLEM: Destructuring loses reactivity
+const state = reactive({
+  firstName: 'John',
+  lastName: 'Doe',
+  age: 25
+})
 
-function increment() {
-  count.value++;
+// This BREAKS reactivity:
+// const { firstName, lastName } = state  // ❌ NOT REACTIVE!
+
+// ✅ SOLUTION 1: Use toRefs() for multiple properties
+const { firstName, lastName, age } = toRefs(state)
+
+// ✅ SOLUTION 2: Use toRef() for single property
+const singleAge = toRef(state, 'age')
+
+// Functions to update
+const updateFirstName = () => {
+  firstName.value = 'Jane'  // Now reactive!
 }
 
-const decrement = () => {
-  count.value--;
-};
-
-const addAmount = (amount) => {
-  count.value += amount;
+const incrementAge = () => {
+  age.value++  // This works!
+  // singleAge.value++ // This also works!
 }
-
-const acceptEvent = (arg, event) => {
-  console.log('Argument accepted:', arg);
-  console.log('Event accepted:', event);
-}
-
-const handleMouseEnter = (event) => {
-  console.log("Mouse entered");
-}
-
-const handleMouseLeave = (event) => {
-  console.log("Mouse left");
-}
-
-// ========== EVENT LISTENERS AVAILABLE IN VUE ==========
-
-// MOUSE EVENTS
-// @click - Mouse button clicked
-// @dblclick - Mouse button double-clicked
-// @mousedown - Mouse button pressed down
-// @mouseup - Mouse button released
-// @mousemove - Mouse moved
-// @mouseenter - Mouse enters element
-// @mouseleave - Mouse leaves element
-// @mouseover - Mouse over element (bubbles)
-// @mouseout - Mouse out of element (bubbles)
-// @contextmenu - Right-click context menu
-
-// KEYBOARD EVENTS
-// @keydown - Key pressed down
-// @keyup - Key released
-// @keypress - Key pressed (deprecated but still works)
-
-// FORM EVENTS
-// @submit - Form submitted
-// @reset - Form reset
-// @change - Input value changed
-// @input - Input value changing (real-time)
-// @focus - Element focused
-// @blur - Element lost focus
-// @select - Text selected in input
-
-// SCROLL EVENTS
-// @scroll - Element scrolled
-
-// DRAG EVENTS
-// @drag - Element being dragged
-// @dragstart - Drag started
-// @dragend - Drag ended
-// @dragover - Dragged element over target
-// @drop - Dragged element dropped
-// @dragenter - Dragged element enters
-// @dragleave - Dragged element leaves
-
-// TOUCH EVENTS (Mobile)
-// @touchstart - Touch started
-// @touchend - Touch ended
-// @touchmove - Touch moving
-// @touchcancel - Touch cancelled
-
-// FOCUS EVENTS
-// @focusin - Element gaining focus
-// @focusout - Element losing focus
-
-// WHEEL EVENT
-// @wheel - Mouse wheel scrolled
-
-// MEDIA EVENTS
-// @play - Media playing
-// @pause - Media paused
-// @ended - Media ended
-// @timeupdate - Media time changed
-// @loadedmetadata - Media metadata loaded
-// @loadstart - Media loading started
-// @progress - Media loading progress
-
-// TRANSITION EVENTS
-// @transitionstart - CSS transition started
-// @transitionend - CSS transition ended
-
-// ANIMATION EVENTS
-// @animationstart - CSS animation started
-// @animationend - CSS animation ended
-// @animationiteration - CSS animation repeating
-
-// CLIPBOARD EVENTS
-// @copy - Content copied to clipboard
-// @cut - Content cut to clipboard
-// @paste - Content pasted from clipboard
-
-// ========== EVENT MODIFIERS (use with @) ==========
-// .stop - Stop event propagation
-// .prevent - Prevent default behavior
-// .self - Only trigger if event target is element itself
-// .once - Only trigger once
-// .passive - Mark listener as passive (performance)
-// .capture - Use event capture mode
-
-// ========== KEY MODIFIERS ==========
-// .enter - Enter key
-// .tab - Tab key
-// .escape - Escape key
-// .space - Space key
-// .delete - Delete/Backspace key
-// .up, .down, .left, .right - Arrow keys
-
-// ========== MOUSE BUTTON MODIFIERS ==========
-// .left - Left mouse button
-// .right - Right mouse button
-// .middle - Middle mouse button
-
-const handleMouseLeft = (event) => {
-  console.log("Mouse left");
-}
-
-const handleMouseRight = (event) => {
-  console.log("Mouse right button clicked");
-}
-
-const handleMouseMiddle = (event) => {
-  console.log("Mouse Middle button clicked");
-}
-
-const handleEnter = (event) => {
-  console.log("Enter key pressed");
-}
-const handleKeyUp = (event) => {
-  console.log("Enter key released");
-}
-
-const handleSubmit = () => {
-  alert("Form submitted!");
-}
-
-const isActive = ref(true);
 </script>
 
 <template>
-  <div class="app-container">
-    <button v-on:click="increment">+</button>
-    <h1 v-if="isActive">Counter: {{ count }}</h1>
-    <button @click="decrement">-</button>
+  <div class="container">
+    <h1>toRefs() - Fix Reactivity Loss</h1>
 
-    <button @click="count = 0">Reset</button>
-    <button @click="count = 100">Count to 100</button>
-    <button @click="isActive = !isActive">
-      {{ isActive ? 'Deactivate' : 'Activate' }}
-    </button>
-    <button @click="addAmount(10)">Add 10</button>
-    <button @click="addAmount(100)">Add 100</button>
-    <button @click="addAmount(1000)">Add 1000</button>
+    <section class="section problem">
+      <h2>❌ The Problem</h2>
+      <pre>
+const state = reactive({ firstName: 'John', lastName: 'Doe' })
+const { firstName, lastName } = state  // Loses reactivity!
+      </pre>
+    </section>
 
-    <!-- Event passing -->
-    <button @click="acceptEvent('Button clicked', $event)">Accept Event</button>
+    <section class="section solution">
+      <h2>✅ The Solution</h2>
+      <pre>
+const { firstName, lastName } = toRefs(state)  // Keeps reactivity!
+firstName.value = 'Jane'  // Works!
+      </pre>
+    </section>
 
-    <div v-on:mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"
-      style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
-      Hover over me
-    </div>
-
-    <div @click.left="handleMouseLeft" @click.right="handleMouseRight" @click.middle="handleMouseMiddle">
-      Click to Test Mouse Left, Right, and Middle
-    </div>
-
-    <input @keydown="handleEnter" >
-
-    </input>
-
-    <input @keyup.space="handleKeyUp" >
-
-    </input>
-
-    <form @submit.prevent="handleSubmit">
-      <input type="text" placeholder="Type something..." />
-      <button type="submit">Submit</button>
-    </form>
-
+    <section class="section demo">
+      <h2>Live Demo</h2>
+      <p>First Name: {{ firstName }}</p>
+      <p>Last Name: {{ lastName }}</p>
+      <p>Age: {{ age }}</p>
+      
+      <button @click="updateFirstName">Change to Jane</button>
+      <button @click="incrementAge">Increment Age</button>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.app-container {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+.container { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: 'Segoe UI', sans-serif; }
+.section { padding: 1.5rem; margin: 1rem 0; border-radius: 12px; }
+.problem { background: #ffebee; border-left: 5px solid #e74c3c; }
+.solution { background: #e8f5e9; border-left: 5px solid #4caf50; }
+.demo { background: #e3f2fd; border-left: 5px solid #2196f3; }
+pre { background: #263238; color: #80cbc4; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+button { padding: 0.5rem 1rem; margin: 0.25rem; border: none; border-radius: 6px; background: #42b883; color: white; cursor: pointer; }
 </style>
