@@ -1,203 +1,82 @@
 <script setup>
-import { ref } from 'vue'
+/**
+ * Vue 3 Watch() Demonstration Component
+ * 
+ * This component demonstrates how to use Vue's watch() function
+ * to monitor changes in reactive data.
+ */
 
-// Simple array
-const fruits = ref(['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'])
+// Import necessary Vue functions
+import { ref, watch } from 'vue';
 
-// Array of objects (users)
-const users = ref([
-  { id: 1, name: 'Alice', age: 28, role: 'Developer' },
-  { id: 2, name: 'Bob', age: 34, role: 'Designer' },
-  { id: 3, name: 'Carol', age: 25, role: 'Manager' },
-  { id: 4, name: 'David', age: 31, role: 'Developer' }
-])
+// ========================================
+// REACTIVE STATE VARIABLES
+// ========================================
+// ref() creates reactive variables that Vue tracks for changes
 
-// Object iteration
-const user = ref({
-  name: 'John Doe',
-  email: 'john@example.com',
-  age: 30,
-  location: 'New York',
-  occupation: 'Developer'
-})
+// Counter starting at 5 - will decrease when button is clicked
+const count = ref(5);
 
-// Nested data
-const categories = ref([
-  {
-    name: 'Electronics',
-    products: [
-      { id: 1, name: 'Laptop', price: 999 },
-      { id: 2, name: 'Phone', price: 699 },
-      { id: 3, name: 'Tablet', price: 499 }
-    ]
-  },
-  {
-    name: 'Clothing',
-    products: [
-      { id: 4, name: 'T-Shirt', price: 29 },
-      { id: 5, name: 'Jeans', price: 79 },
-      { id: 6, name: 'Jacket', price: 149 }
-    ]
-  }
-])
+// Boolean flag to track authentication status - starts as true
+const isAuth = ref(true);
 
-// Adding/Removing fruits
-const newFruit = ref('')
-const addFruit = () => {
-  if (newFruit.value.trim()) {
-    fruits.value.push(newFruit.value.trim())
-    newFruit.value = ''
-  }
-}
-const removeFruit = (index) => {
-  fruits.value.splice(index, 1)
-}
+// Text message that will be displayed and watched for changes
+const message = ref('Hello Vue 3!');
 
-// User operations
-const newUser = ref({ name: '', age: '', role: 'Developer' })
-const addUser = () => {
-  if (newUser.value.name) {
-    users.value.push({
-      id: Date.now(),
-      ...newUser.value,
-      age: Number(newUser.value.age)
-    })
-    newUser.value = { name: '', age: '', role: 'Developer' }
-  }
-}
-const removeUser = (id) => {
-  users.value = users.value.filter(u => u.id !== id)
-}
+// ========================================
+// FUNCTIONS
+// ========================================
+
+/**
+ * increment() - Updates all reactive variables when button is clicked
+ * Note: Despite the name, it actually decrements the count
+ */
+const increment = () => {
+  count.value--;                          // Decrease count by 1
+  isAuth.value = !isAuth.value;           // Toggle authentication (true ↔ false)
+  message.value = "Hello vue next 4!";    // Change the message text
+};
+
+// ========================================
+// WATCHERS
+// ========================================
+
+/**
+ * watch() - Monitors the 'message' variable for changes
+ * Whenever 'message' changes, this function runs automatically
+ * 
+ * @param {string} newValue - The new value of message
+ * @param {string} oldValue - The previous value of message
+ */
+watch(message, (newValue, oldValue) => {
+  console.log(`Count changed from ${oldValue} to ${newValue}`);
+});
+
 </script>
 
 <template>
+  <!-- 
+    TEMPLATE SECTION
+    This defines what will be displayed on the page
+  -->
   <div class="container">
-    <h1>v-for: Complete List Rendering Examples</h1>
-
-    <!-- Simple Array -->
-    <section class="section">
-      <h2>1️⃣ Simple Array with Index</h2>
-      
-      <div class="add-form">
-        <input v-model="newFruit" @keyup.enter="addFruit" placeholder="Add fruit...">
-        <button @click="addFruit" class="btn">Add</button>
-      </div>
-
-      <ul class="fruit-list">
-        <li v-for="(fruit, index) in fruits" :key="index" class="fruit-item">
-          <span class="index">{{ index }}</span>
-          <span class="name">{{ fruit }}</span>
-          <button @click="removeFruit(index)" class="btn-remove">×</button>
-        </li>
-      </ul>
-
-      <pre>
-v-for="(fruit, index) in fruits" :key="index"
-{{ index }} - {{ fruit }}
-      </pre>
-    </section>
-
-    <!-- Array of Objects -->
-    <section class="section">
-      <h2>2️⃣ Array of Objects</h2>
-      
-      <div class="add-form user-form">
-        <input v-model="newUser.name" placeholder="Name">
-        <input v-model="newUser.age" type="number" placeholder="Age">
-        <select v-model="newUser.role">
-          <option>Developer</option>
-          <option>Designer</option>
-          <option>Manager</option>
-        </select>
-        <button @click="addUser" class="btn">Add User</button>
-      </div>
-
-      <div class="user-grid">
-        <div v-for="user in users" :key="user.id" class="user-card">
-          <button @click="removeUser(user.id)" class="btn-close">×</button>
-          <div class="user-avatar">{{ user.name[0] }}</div>
-          <h3>{{ user.name }}</h3>
-          <p class="role">{{ user.role }}</p>
-          <p class="age">Age: {{ user.age }}</p>
-          <p class="id">ID: {{ user.id }}</p>
-        </div>
-      </div>
-
-      <pre>
-v-for="user in users" :key="user.id"
-// Always use unique ID as key, not index!
-      </pre>
-    </section>
-
-    <!-- Object Properties -->
-    <section class="section">
-      <h2>3️⃣ Looping Object Properties</h2>
-      
-      <table class="prop-table">
-        <thead>
-          <tr><th>Index</th><th>Key</th><th>Value</th></tr>
-        </thead>
-        <tbody>
-          <tr v-for="(value, key, index) in user" :key="key">
-            <td>{{ index }}</td>
-            <td><strong>{{ key }}</strong></td>
-            <td>{{ value }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <pre>
-v-for="(value, key, index) in user" :key="key"
-// value = 'John Doe', key = 'name', index = 0
-      </pre>
-    </section>
-
-    <!-- Nested v-for -->
-    <section class="section">
-      <h2>4️⃣ Nested v-for (Categories → Products)</h2>
-      
-      <div class="categories">
-        <div v-for="category in categories" :key="category.name" class="category">
-          <h3>{{ category.name }}</h3>
-          <div class="products">
-            <div v-for="product in category.products" :key="product.id" class="product">
-              <span class="product-name">{{ product.name }}</span>
-              <span class="product-price">${{ product.price }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <pre>
-v-for="category in categories"
-  v-for="product in category.products"
-      </pre>
-    </section>
+    <!-- Main heading -->
+    <h1>Watch()</h1>
     
-    <!-- Range Examples -->
-    <section class="section">
-      <h2>6️⃣ Range Examples</h2>
-      
-      <h4>Rating Stars (1-5):</h4>
-      <div class="rating">
-        <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= 3 }">★</span>
-      </div>
-
-      <h4>Pagination Buttons:</h4>
-      <div class="pagination">
-        <button v-for="page in 10" :key="page" class="page-btn">{{ page }}</button>
-      </div>
-
-      <h4>Calendar Days:</h4>
-      <div class="calendar-grid">
-        <div v-for="day in 31" :key="day" class="calendar-day">{{ day }}</div>
-      </div>
-
-      <pre>
-v-for="n in 5" :key="n"   // n = 1, 2, 3, 4, 5
-v-for="n in 10" :key="n"  // Pagination example
-      </pre>
-    </section>
+    <!-- Display the current count value -->
+    <p>Count: {{ count }}</p>
+    
+    <!-- Display whether user is authenticated (true/false) -->
+    <p>Is Auth: {{ isAuth }}</p>
+    
+    <!-- Display the current message - this is being watched! -->
+    <p>Message: {{ message }}</p>
+    
+    <!-- 
+      Button that triggers the increment function when clicked
+      @click is a Vue directive that listens for click events
+    -->
+    <button class="btn" @click="increment">Increment</button>
   </div>
 </template>
 
