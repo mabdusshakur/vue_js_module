@@ -41,13 +41,6 @@ const categories = ref([
   }
 ])
 
-// Matrix (2D array)
-const matrix = ref([
-  [1, 2, 3],
-  [4, 5, 6],
-  [7, 8, 9]
-])
-
 // Adding/Removing fruits
 const newFruit = ref('')
 const addFruit = () => {
@@ -180,29 +173,7 @@ v-for="category in categories"
   v-for="product in category.products"
       </pre>
     </section>
-
-    <!-- Matrix/Grid -->
-    <section class="section">
-      <h2>5️⃣ 2D Array (Matrix)</h2>
-      
-      <div class="matrix">
-        <div v-for="(row, rowIndex) in matrix" :key="rowIndex" class="matrix-row">
-          <div 
-            v-for="(cell, colIndex) in row" 
-            :key="colIndex" 
-            class="matrix-cell"
-          >
-            [{{ rowIndex }},{{ colIndex }}] = {{ cell }}
-          </div>
-        </div>
-      </div>
-
-      <pre>
-v-for="(row, rowIndex) in matrix"
-  v-for="(cell, colIndex) in row"
-      </pre>
-    </section>
-
+    
     <!-- Range Examples -->
     <section class="section">
       <h2>6️⃣ Range Examples</h2>
