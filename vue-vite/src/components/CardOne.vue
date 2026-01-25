@@ -1,5 +1,24 @@
 <script setup>
+import { onBeforeMount, onMounted, onBeforeUnmount, onUnmounted } from 'vue';
+
 const title = 'Card One'
+
+onMounted(() => {
+  console.log('onMounted called in CardOne.vue');
+});
+
+
+onBeforeMount(() => {
+  console.log('onBeforeMount called in CardOne.vue');
+});
+
+onBeforeUnmount(() => {
+  console.log('onBeforeUnmount called in CardOne.vue');
+});
+
+onUnmounted(() => {
+  console.log('onUnmounted called in CardOne.vue');
+});
 </script>
 
 <template>
