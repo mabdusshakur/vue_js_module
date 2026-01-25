@@ -1,149 +1,231 @@
 <script setup>
 import { ref } from 'vue'
 
-// Authentication state
-const isLoggedIn = ref(false)
-const user = ref({ name: 'John Doe', role: 'user' })
+// Simple array
+const fruits = ref(['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'])
 
-// Rating example
-const rating = ref(3)
+// Array of objects (users)
+const users = ref([
+  { id: 1, name: 'Alice', age: 28, role: 'Developer' },
+  { id: 2, name: 'Bob', age: 34, role: 'Designer' },
+  { id: 3, name: 'Carol', age: 25, role: 'Manager' },
+  { id: 4, name: 'David', age: 31, role: 'Developer' }
+])
 
-// Status example
-const orderStatus = ref('processing')
-const statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+// Object iteration
+const user = ref({
+  name: 'John Doe',
+  email: 'john@example.com',
+  age: 30,
+  location: 'New York',
+  occupation: 'Developer'
+})
 
-// Toggle login
-const toggleLogin = () => {
-  isLoggedIn.value = !isLoggedIn.value
+// Nested data
+const categories = ref([
+  {
+    name: 'Electronics',
+    products: [
+      { id: 1, name: 'Laptop', price: 999 },
+      { id: 2, name: 'Phone', price: 699 },
+      { id: 3, name: 'Tablet', price: 499 }
+    ]
+  },
+  {
+    name: 'Clothing',
+    products: [
+      { id: 4, name: 'T-Shirt', price: 29 },
+      { id: 5, name: 'Jeans', price: 79 },
+      { id: 6, name: 'Jacket', price: 149 }
+    ]
+  }
+])
+
+// Matrix (2D array)
+const matrix = ref([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+])
+
+// Adding/Removing fruits
+const newFruit = ref('')
+const addFruit = () => {
+  if (newFruit.value.trim()) {
+    fruits.value.push(newFruit.value.trim())
+    newFruit.value = ''
+  }
+}
+const removeFruit = (index) => {
+  fruits.value.splice(index, 1)
 }
 
-// Change role
-const toggleRole = () => {
-  user.value.role = user.value.role === 'admin' ? 'user' : 'admin'
+// User operations
+const newUser = ref({ name: '', age: '', role: 'Developer' })
+const addUser = () => {
+  if (newUser.value.name) {
+    users.value.push({
+      id: Date.now(),
+      ...newUser.value,
+      age: Number(newUser.value.age)
+    })
+    newUser.value = { name: '', age: '', role: 'Developer' }
+  }
+}
+const removeUser = (id) => {
+  users.value = users.value.filter(u => u.id !== id)
 }
 </script>
 
 <template>
   <div class="container">
-    <h1>Conditional Rendering: v-if, v-else-if, v-else</h1>
+    <h1>v-for: Complete List Rendering Examples</h1>
 
-    <!-- Basic v-if / v-else -->
+    <!-- Simple Array -->
     <section class="section">
-      <h2>1️⃣ Basic v-if / v-else</h2>
+      <h2>1️⃣ Simple Array with Index</h2>
       
-      <div class="demo-box">
-        <!-- Conditional rendering based on login state -->
-        <div v-if="isLoggedIn" class="logged-in">
-          <p>👋 Welcome back, {{ user.name }}!</p>
-          <button @click="toggleLogin" class="btn btn-danger">Logout</button>
-        </div>
-        
-        <div v-else class="logged-out">
-          <p>🔒 Please log in to continue</p>
-          <button @click="toggleLogin" class="btn btn-primary">Login</button>
-        </div>
-
-        <pre>
-&lt;div v-if="isLoggedIn"&gt;Welcome!&lt;/div&gt;
-&lt;div v-else&gt;Please login&lt;/div&gt;
-        </pre>
+      <div class="add-form">
+        <input v-model="newFruit" @keyup.enter="addFruit" placeholder="Add fruit...">
+        <button @click="addFruit" class="btn">Add</button>
       </div>
+
+      <ul class="fruit-list">
+        <li v-for="(fruit, index) in fruits" :key="index" class="fruit-item">
+          <span class="index">{{ index }}</span>
+          <span class="name">{{ fruit }}</span>
+          <button @click="removeFruit(index)" class="btn-remove">×</button>
+        </li>
+      </ul>
+
+      <pre>
+v-for="(fruit, index) in fruits" :key="index"
+{{ index }} - {{ fruit }}
+      </pre>
     </section>
 
-    <!-- v-else-if chain -->
+    <!-- Array of Objects -->
     <section class="section">
-      <h2>2️⃣ v-else-if Chain</h2>
+      <h2>2️⃣ Array of Objects</h2>
       
-      <div class="demo-box">
-        <div class="rating-demo">
-          <input type="range" v-model.number="rating" min="1" max="5" />
-          <span class="rating-value">Rating: {{ rating }}</span>
-        </div>
-
-        <div class="rating-message">
-          <p v-if="rating === 5" class="excellent">⭐ Excellent! Perfect score!</p>
-          <p v-else-if="rating === 4" class="good">👍 Good! Almost perfect!</p>
-          <p v-else-if="rating === 3" class="average">😐 Average. Room for improvement.</p>
-          <p v-else-if="rating === 2" class="poor">😕 Poor. Needs work.</p>
-          <p v-else class="terrible">😞 Terrible. Major issues.</p>
-        </div>
-
-        <pre>
-&lt;p v-if="rating === 5"&gt;Excellent!&lt;/p&gt;
-&lt;p v-else-if="rating === 4"&gt;Good!&lt;/p&gt;
-&lt;p v-else-if="rating === 3"&gt;Average&lt;/p&gt;
-&lt;p v-else&gt;Poor&lt;/p&gt;
-        </pre>
+      <div class="add-form user-form">
+        <input v-model="newUser.name" placeholder="Name">
+        <input v-model="newUser.age" type="number" placeholder="Age">
+        <select v-model="newUser.role">
+          <option>Developer</option>
+          <option>Designer</option>
+          <option>Manager</option>
+        </select>
+        <button @click="addUser" class="btn">Add User</button>
       </div>
-    </section>
 
-    <!-- Order Status Example -->
-    <section class="section">
-      <h2>3️⃣ Order Status Example</h2>
-      
-      <div class="demo-box">
-        <div class="status-selector">
-          <label>Order Status:</label>
-          <select v-model="orderStatus">
-            <option v-for="status in statuses" :key="status" :value="status">
-              {{ status }}
-            </option>
-          </select>
-        </div>
-
-        <div class="status-display">
-          <div v-if="orderStatus === 'pending'" class="status pending">
-            ⏳ Order Pending - Waiting for confirmation
-          </div>
-          <div v-else-if="orderStatus === 'processing'" class="status processing">
-            ⚙️ Processing - Preparing your order
-          </div>
-          <div v-else-if="orderStatus === 'shipped'" class="status shipped">
-            🚚 Shipped - On the way!
-          </div>
-          <div v-else-if="orderStatus === 'delivered'" class="status delivered">
-            ✅ Delivered - Enjoy your purchase!
-          </div>
-          <div v-else-if="orderStatus === 'cancelled'" class="status cancelled">
-            ❌ Cancelled - Order was cancelled
-          </div>
+      <div class="user-grid">
+        <div v-for="user in users" :key="user.id" class="user-card">
+          <button @click="removeUser(user.id)" class="btn-close">×</button>
+          <div class="user-avatar">{{ user.name[0] }}</div>
+          <h3>{{ user.name }}</h3>
+          <p class="role">{{ user.role }}</p>
+          <p class="age">Age: {{ user.age }}</p>
+          <p class="id">ID: {{ user.id }}</p>
         </div>
       </div>
+
+      <pre>
+v-for="user in users" :key="user.id"
+// Always use unique ID as key, not index!
+      </pre>
     </section>
 
-    <!-- Role-based content -->
+    <!-- Object Properties -->
     <section class="section">
-      <h2>4️⃣ Role-Based Content</h2>
+      <h2>3️⃣ Looping Object Properties</h2>
       
-      <div class="demo-box">
-        <p>Current Role: <strong>{{ user.role }}</strong></p>
-        <button @click="toggleRole" class="btn">Toggle Role</button>
+      <table class="prop-table">
+        <thead>
+          <tr><th>Index</th><th>Key</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="(value, key, index) in user" :key="key">
+            <td>{{ index }}</td>
+            <td><strong>{{ key }}</strong></td>
+            <td>{{ value }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div class="role-content">
-          <template v-if="user.role === 'admin'">
-            <div class="admin-panel">
-              <h3>🔧 Admin Panel</h3>
-              <button class="btn btn-danger">Delete All Users</button>
-              <button class="btn btn-warning">Reset Database</button>
-              <button class="btn">View Analytics</button>
+      <pre>
+v-for="(value, key, index) in user" :key="key"
+// value = 'John Doe', key = 'name', index = 0
+      </pre>
+    </section>
+
+    <!-- Nested v-for -->
+    <section class="section">
+      <h2>4️⃣ Nested v-for (Categories → Products)</h2>
+      
+      <div class="categories">
+        <div v-for="category in categories" :key="category.name" class="category">
+          <h3>{{ category.name }}</h3>
+          <div class="products">
+            <div v-for="product in category.products" :key="product.id" class="product">
+              <span class="product-name">{{ product.name }}</span>
+              <span class="product-price">${{ product.price }}</span>
             </div>
-          </template>
-          
-          <template v-else>
-            <div class="user-panel">
-              <h3>👤 User Dashboard</h3>
-              <p>You have limited access.</p>
-              <button class="btn">View Profile</button>
-            </div>
-          </template>
+          </div>
         </div>
-
-        <pre>
-&lt;template v-if="user.role === 'admin'"&gt;
-  &lt;!-- Multiple elements without wrapper div --&gt;
-&lt;/template&gt;
-        </pre>
       </div>
+
+      <pre>
+v-for="category in categories"
+  v-for="product in category.products"
+      </pre>
+    </section>
+
+    <!-- Matrix/Grid -->
+    <section class="section">
+      <h2>5️⃣ 2D Array (Matrix)</h2>
+      
+      <div class="matrix">
+        <div v-for="(row, rowIndex) in matrix" :key="rowIndex" class="matrix-row">
+          <div 
+            v-for="(cell, colIndex) in row" 
+            :key="colIndex" 
+            class="matrix-cell"
+          >
+            [{{ rowIndex }},{{ colIndex }}] = {{ cell }}
+          </div>
+        </div>
+      </div>
+
+      <pre>
+v-for="(row, rowIndex) in matrix"
+  v-for="(cell, colIndex) in row"
+      </pre>
+    </section>
+
+    <!-- Range Examples -->
+    <section class="section">
+      <h2>6️⃣ Range Examples</h2>
+      
+      <h4>Rating Stars (1-5):</h4>
+      <div class="rating">
+        <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= 3 }">★</span>
+      </div>
+
+      <h4>Pagination Buttons:</h4>
+      <div class="pagination">
+        <button v-for="page in 10" :key="page" class="page-btn">{{ page }}</button>
+      </div>
+
+      <h4>Calendar Days:</h4>
+      <div class="calendar-grid">
+        <div v-for="day in 31" :key="day" class="calendar-day">{{ day }}</div>
+      </div>
+
+      <pre>
+v-for="n in 5" :key="n"   // n = 1, 2, 3, 4, 5
+v-for="n in 10" :key="n"  // Pagination example
+      </pre>
     </section>
   </div>
 </template>
@@ -151,31 +233,64 @@ const toggleRole = () => {
 <style scoped>
 .container { max-width: 900px; margin: 0 auto; padding: 2rem; font-family: 'Segoe UI', sans-serif; }
 .section { background: #f8f9fa; padding: 1.5rem; margin: 1.5rem 0; border-radius: 12px; }
-.demo-box { background: white; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
-.btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; margin: 0.25rem; background: #42b883; color: white; }
-.btn-primary { background: #3498db; }
-.btn-danger { background: #e74c3c; }
-.btn-warning { background: #f39c12; color: #333; }
-.logged-in { background: #d4edda; padding: 1rem; border-radius: 8px; }
-.logged-out { background: #f8d7da; padding: 1rem; border-radius: 8px; }
-.rating-demo { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-.rating-value { font-size: 1.25rem; font-weight: bold; }
-.rating-message p { padding: 1rem; border-radius: 8px; font-size: 1.25rem; margin: 0; }
-.excellent { background: #27ae60; color: white; }
-.good { background: #2ecc71; color: white; }
-.average { background: #f39c12; color: white; }
-.poor { background: #e67e22; color: white; }
-.terrible { background: #e74c3c; color: white; }
-.status-selector { margin-bottom: 1rem; }
-.status-selector select { padding: 0.5rem; font-size: 1rem; }
-.status { padding: 1rem; border-radius: 8px; font-weight: bold; }
-.pending { background: #ffeaa7; }
-.processing { background: #74b9ff; }
-.shipped { background: #81ecec; }
-.delivered { background: #55a3ff; color: white; }
-.cancelled { background: #fab1a0; }
-.admin-panel, .user-panel { padding: 1rem; margin-top: 1rem; border-radius: 8px; }
-.admin-panel { background: #ffe6e6; border: 2px solid #e74c3c; }
-.user-panel { background: #e6f3ff; border: 2px solid #3498db; }
-pre { background: #263238; color: #80cbc4; padding: 1rem; border-radius: 6px; margin-top: 1rem; overflow-x: auto; font-size: 0.875rem; }
+
+/* Forms */
+.add-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.add-form input, .add-form select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; }
+.btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; background: #42b883; color: white; cursor: pointer; }
+.btn:hover { background: #35a372; }
+
+/* Fruit List */
+.fruit-list { list-style: none; padding: 0; }
+.fruit-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: white; margin: 0.5rem 0; border-radius: 8px; }
+.index { background: #42b883; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.name { flex: 1; }
+.btn-remove { background: #e74c3c; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.25rem; }
+.btn-remove:hover { background: #c0392b; }
+
+/* User Grid */
+.user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.user-card { background: white; padding: 1.5rem; border-radius: 12px; text-align: center; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; }
+.user-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn-close { position: absolute; top: 0.5rem; right: 0.5rem; background: #e74c3c; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; }
+.btn-close:hover { background: #c0392b; }
+.user-avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem; }
+.user-card h3 { margin: 0; }
+.role { color: #42b883; font-weight: 500; margin: 0.25rem 0; }
+.age, .id { color: #666; font-size: 0.875rem; margin: 0.25rem 0; }
+
+/* Table */
+.prop-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+.prop-table th, .prop-table td { padding: 0.75rem; border: 1px solid #ddd; }
+.prop-table th { background: #42b883; color: white; }
+
+/* Categories */
+.categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.category { background: white; border-radius: 8px; overflow: hidden; }
+.category h3 { background: #42b883; color: white; margin: 0; padding: 1rem; }
+.products { padding: 0.5rem; }
+.product { display: flex; justify-content: space-between; padding: 0.75rem; border-bottom: 1px solid #eee; }
+.product:last-child { border-bottom: none; }
+.product-price { color: #42b883; font-weight: bold; }
+
+/* Matrix */
+.matrix { display: inline-block; background: white; padding: 1rem; border-radius: 8px; }
+.matrix-row { display: flex; }
+.matrix-cell { width: 100px; height: 50px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; }
+
+/* Rating & Pagination */
+.rating { font-size: 2rem; margin-bottom: 1rem; }
+.star { color: #ddd; cursor: pointer; transition: transform 0.2s; }
+.star:hover { transform: scale(1.2); }
+.star.filled { color: #f1c40f; }
+.pagination { display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+.page-btn { width: 36px; height: 36px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.page-btn:hover { background: #42b883; color: white; border-color: #42b883; }
+
+/* Calendar */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; max-width: 350px; }
+.calendar-day { background: white; padding: 0.5rem; text-align: center; border-radius: 4px; transition: all 0.2s; }
+.calendar-day:hover { background: #42b883; color: white; }
+
+pre { background: #263238; color: #80cbc4; padding: 1rem; border-radius: 6px; margin-top: 1rem; overflow-x: auto; }
 </style>
