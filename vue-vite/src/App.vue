@@ -1,33 +1,12 @@
 <script setup>
-import { ref } from 'vue'
-import CardOne from './components/CardOne.vue'
+import PostsList from './components/PostsList.vue'
 
-const count = ref(0)
-
-const increment = () => {
-  count.value++
-}
-
-const decrement = () => {
-  count.value--
-}
-
-const handleAdd = (event) => {
-  count.value += event
-}
 </script>
 
 <template>
   <div>
-    <!-- Counter -->
-    <div class="counter">
-      <button @click="decrement" class="btn">−</button>
-      <span class="count">{{ count }}</span>
-      <button @click="increment" class="btn">+</button>
-    </div>
-
-    <!-- Child component that emits events -->
-    <CardOne @increment="increment" @decrement="decrement" @add="count += $event" />
+    <!-- Posts List Component -->
+    <PostsList />
   </div>
 </template>
 
