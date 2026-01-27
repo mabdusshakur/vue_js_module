@@ -1,43 +1,47 @@
 <script setup>
-import { onBeforeMount, onMounted, onBeforeUnmount, onUnmounted } from 'vue';
+import { ref } from 'vue'
+const title = 'Card One - Emit Example'
 
-const title = 'Card One'
+const amount = ref(200);
 
-onMounted(() => {
-  console.log('onMounted called in CardOne.vue');
-});
+const emit = defineEmits(['increment', 'decrement', 'add'])
 
+const handleEmitIncrement = () => {
+  emit('increment')
+}
 
-onBeforeMount(() => {
-  console.log('onBeforeMount called in CardOne.vue');
-});
+const handleEmitDecrement = () => {
+  emit('decrement')
+}
 
-onBeforeUnmount(() => {
-  console.log('onBeforeUnmount called in CardOne.vue');
-});
+const addValue = () => {
+  emit('add', amount.value)
+}
 
-onUnmounted(() => {
-  console.log('onUnmounted called in CardOne.vue');
-});
 </script>
 
 <template>
     <div class="card">
         <h2>{{ title }}</h2>
-        <p>This card has a GREEN title</p>
+        <p>This card emits events to parent component</p>
+        <div class="card-buttons">
+          <button @click="handleEmitIncrement" class="emit-btn">Emit Increment</button>
+          <button @click="handleEmitDecrement" class="emit-btn">Emit Decrement</button>
+          <input type="number"  v-model="amount" />
+          <button @click="addValue" class="emit-btn">Emit Add</button>
+        </div>
     </div>
 </template>
 
 <style scoped>
 
 p {
-    color: lightgreen;
+    color: rgb(27, 61, 27);
 }
-
 
 /* This .title ONLY affects THIS component */
 .title {
-    color: #42b883;
+    color: #0d3523;
     font-size: 1.5rem;
 }
 
@@ -46,5 +50,25 @@ p {
     padding: 1rem;
     border-radius: 8px;
     margin: 1rem;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.emit-btn {
+    padding: 0.5rem 1rem;
+    background: #42b883;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.emit-btn:hover {
+    background: #3aa876;
 }
 </style>
