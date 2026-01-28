@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 
 const posts = ref([]);
 
-// method : 1
+//method : 1
 // import postsData from '../data/posts.json'
 
 // method : 2
