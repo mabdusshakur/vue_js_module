@@ -1,45 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 
-const loading = ref(true)
-const posts = ref([])
+const posts = ref([]);
 
-const apiRoot = "https://jsonplaceholder.typicode.com"
+// method : 1
+// import postsData from '../data/posts.json'
 
-// const fetchPosts = async () => {
-//     try {
-//         const response = await fetch(`${apiRoot}/posts?_limit=10`)
-//         if(!response.ok) {
-//             throw new Error(`Failed to fetch posts http status: ${response.status}`)
-//         }
-//         posts.value = await response.json()
-
-//     } catch (error) {
-//         console.log('Error fetching posts:', error)
-//         loading.value = false
-//     } finally {
-//         loading.value = false
-//     }
-// }
-
-const fetchWithAxios = async () => {
-    const response = await axios.get(`${apiRoot}/posts`, {
-        params: { _limit: 10 }
-    }).catch((error) => {
-        loading.value = false
-        console.log('Axios fetch error:', error)
-    }).finally(() => {
-        loading.value = false
-    })
-    
-    posts.value = response.data
+// method : 2
+const loadDynamic = async () => {
+    const module = await import('../data/posts.json');
+    posts.value = module.default;
 }
-
-
 onMounted(() => {
-    // fetchPosts();
-    fetchWithAxios();
+    // posts.value = postsData; // method : 1
+
+    loadDynamic(); // method : 2
 });
 </script>
 
